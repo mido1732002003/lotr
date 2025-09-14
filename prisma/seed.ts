@@ -1,7 +1,5 @@
 import { PrismaClient, DrawStatus, WalletNetwork } from '@prisma/client';
-import { hash } from 'bcryptjs';
 import crypto from 'crypto';
-void hash;
 const prisma = new PrismaClient();
 
 function generateServerSeed(): { seed: string; hash: string } {
