@@ -7,7 +7,7 @@ export default async function ResultsPage() {
   const locale = await getLocale();
   const isArabic = locale === 'ar';
   
-  let completedDraws = [];
+  let completedDraws: any [] = [];
   try {
     completedDraws = await prisma.draw.findMany({
       where: { status: 'COMPLETED' },
