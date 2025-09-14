@@ -12,12 +12,27 @@ export interface AnchorProvider {
   getAnchorAtHeight(height: number): Promise<BlockchainAnchor>;
 }
 
+// أداة موحدة لتوليد hex عشوائي (تشتغل في Node.js + Web Crypto)
+function randomHex(size: number): string {
+  if (typeof (globalThis as any).crypto?.getRandomValues === 'function') {
+    // Web Crypto API (Edge runtimes / Browsers)
+    const array = new Uint8Array(size);
+    (globalThis as any).crypto.getRandomValues(array);
+    return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+  } else {
+    // Node.js crypto
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const nodeCrypto = require('crypto');
+    return nodeCrypto.randomBytes(size).toString('hex');
+  }
+}
+
 /**
  * Bitcoin anchor provider (using public APIs)
  */
 export class BitcoinAnchorProvider implements AnchorProvider {
   private baseUrl = 'https://blockchain.info';
-  
+
   async getLatestAnchor(): Promise<BlockchainAnchor> {
     try {
       const response = await axios.get(`${this.baseUrl}/latestblock`);
@@ -29,17 +44,18 @@ export class BitcoinAnchorProvider implements AnchorProvider {
       };
     } catch (error) {
       console.error('Failed to fetch Bitcoin anchor:', error);
-      // Fallback to mock data in development
       if (process.env.NODE_ENV === 'development') {
         return this.getMockAnchor();
       }
       throw error;
     }
   }
-  
+
   async getAnchorAtHeight(height: number): Promise<BlockchainAnchor> {
     try {
-      const response = await axios.get(`${this.baseUrl}/block-height/${height}?format=json`);
+      const response = await axios.get(
+        `${this.baseUrl}/block-height/${height}?format=json`
+      );
       const block = response.data.blocks[0];
       return {
         network: 'bitcoin',
@@ -55,12 +71,12 @@ export class BitcoinAnchorProvider implements AnchorProvider {
       throw error;
     }
   }
-  
+
   private getMockAnchor(): BlockchainAnchor {
     return {
       network: 'bitcoin',
       blockHeight: 820000 + Math.floor(Math.random() * 1000),
-      blockHash: '0000000000000000000' + crypto.randomBytes(20).toString('hex'),
+      blockHash: '0000000000000000000' + randomHex(20),
       timestamp: new Date(),
     };
   }
@@ -70,8 +86,9 @@ export class BitcoinAnchorProvider implements AnchorProvider {
  * Ethereum anchor provider
  */
 export class EthereumAnchorProvider implements AnchorProvider {
-  private baseUrl = process.env.ETHEREUM_RPC_URL || 'https://eth.public-rpc.com';
-  
+  private baseUrl =
+    process.env.ETHEREUM_RPC_URL || 'https://eth.public-rpc.com';
+
   async getLatestAnchor(): Promise<BlockchainAnchor> {
     try {
       const response = await axios.post(this.baseUrl, {
@@ -80,7 +97,7 @@ export class EthereumAnchorProvider implements AnchorProvider {
         params: ['latest', false],
         id: 1,
       });
-      
+
       const block = response.data.result;
       return {
         network: 'ethereum',
@@ -93,15 +110,15 @@ export class EthereumAnchorProvider implements AnchorProvider {
       if (process.env.NODE_ENV === 'development') {
         return {
           network: 'ethereum',
-          blockHeight: 18000000 + Math.floor(Math.random() * 1000),
-          blockHash: '0x' + crypto.randomBytes(32).toString('hex'),
+          blockHeight: 18_000_000 + Math.floor(Math.random() * 1000),
+          blockHash: '0x' + randomHex(32),
           timestamp: new Date(),
         };
       }
       throw error;
     }
   }
-  
+
   async getAnchorAtHeight(height: number): Promise<BlockchainAnchor> {
     try {
       const response = await axios.post(this.baseUrl, {
@@ -110,7 +127,7 @@ export class EthereumAnchorProvider implements AnchorProvider {
         params: [`0x${height.toString(16)}`, false],
         id: 1,
       });
-      
+
       const block = response.data.result;
       return {
         network: 'ethereum',
@@ -125,8 +142,12 @@ export class EthereumAnchorProvider implements AnchorProvider {
   }
 }
 
-// Factory function to get anchor provider
-export function getAnchorProvider(network: 'bitcoin' | 'ethereum' = 'bitcoin'): AnchorProvider {
+/**
+ * Factory function to get anchor provider
+ */
+export function getAnchorProvider(
+  network: 'bitcoin' | 'ethereum' = 'bitcoin'
+): AnchorProvider {
   switch (network) {
     case 'bitcoin':
       return new BitcoinAnchorProvider();
