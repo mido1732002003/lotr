@@ -181,7 +181,7 @@ export class DrawService {
             drawId,
             totalPrizePool,
             platformFee,
-            fairnessProof,
+            fairnessProof: JSON.parse(JSON.stringify(fairnessProof)),
           },
         },
       });
