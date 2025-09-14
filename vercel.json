@@ -1,0 +1,15 @@
+{
+  "buildCommand": "pnpm install && pnpm prisma generate && pnpm build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_DEFAULT_LOCALE": "en",
+      "NEXT_PUBLIC_SUPPORTED_LOCALES": "en,ar"
+    }
+  }
+}
