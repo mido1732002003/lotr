@@ -26,6 +26,7 @@
     "cookie": "^0.6.0",
     "date-fns": "^3.0.0",
     "iron-session": "^8.0.1",
+    "lru-cache": "^11.2.1",
     "next": "14.0.4",
     "next-intl": "^3.4.0",
     "react": "^18.2.0",
