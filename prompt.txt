@@ -1,0 +1,87 @@
+You are an expert prompt-taker AND a senior full-stack web engineer. Build a **simple, production-ready bilingual lottery website** named **lotr** with **crypto pay-in and payout** support. Follow these rules EXACTLY.
+
+# High-level
+- Keep the product **very simple** (MVP), with **as few pages as possible**.
+- **Tech stack (strict):** Next.js 14 (App Router, React Server Components) + TypeScript (strict) + Tailwind CSS + next-intl for i18n (English/Arabic with RTL) + Prisma ORM + PostgreSQL in Docker + Zod validation + ESLint/Prettier + pnpm.
+- **Database:** PostgreSQL (Docker Compose). Prisma as schema & migration tool.
+- **Payments (crypto only):** Implement a **payment provider adapter layer**. For the MVP, provide a **working Coinbase Commerce adapter** (checkout + webhook signature verification + status mapping) and a **stub NOWPayments adapter** (for future expansion). The **code and the chosen payment method must be consistent** end-to-end (no pseudo-code). Confirmations must rely on provider webhooks, not client signals.
+- **Payouts:** Start with **manual on-chain payout recording** (admin enters tx hash to mark as paid). Design the adapter interface so **automated payouts** can be added later without refactoring the core.
+- **Provably fair draws:** Implement a simple, auditable method now:
+  - Commit–reveal using a server seed (commit hash published before draw) + a public chain anchor (e.g., latest Bitcoin block hash at draw time) to derive the winner. Store full audit trail.
+  - Provide a clean seam to swap to Chainlink VRF later.
+- **Internationalization:** English and Arabic (RTL), language switcher, and locale-specific formatting. All user-visible strings come from translation files.
+- **Security & quality:** Verify webhooks (HMAC) server-side, rate-limit sensitive endpoints, validate all inputs with Zod, store minimal PII (ideally only wallet address + email optional), use HTTP-only cookies if needed, set strict CSP recommendations, and include basic request logging. Keep code modern and consistent.
+
+# Product scope (MVP, minimal pages)
+- **Pages**
+  1) `/` (Home): short explainer, “Buy Ticket” flow inline (no extra page), language toggle.
+  2) `/admin` (Admin): password-protected (env ADMIN_PASS), actions: view tickets, trigger draw (manual), record payout tx hash, view audit trail.
+- **APIs**
+  - `/api/payments/create-checkout` (server action or route handler)
+  - `/api/payments/webhook` (provider signature verification)
+  - `/api/draws/run` (admin only)
+  - `/api/payouts/record` (admin only)
+- **Entities**
+  - User (optional email), Wallet (address + network), Ticket, Draw, Payment, Payout, AuditLog, Translation (files).
+- **Features to strengthen the MVP**
+  - Provably fair proof page per draw (seed commit, block hash, steps, winner derivation).
+  - Basic rate limiting (middleware) on payment creation & admin routes.
+  - Simple email template hooks (stub) for receipts/win notice (can be console logger by default).
+  - Basic CI (GitHub Actions) for lint, type-check, build, Prisma generate, and minimal API test.
+  - Seed script to create a sample upcoming draw and demo translations.
+  - Docker Compose for Postgres and app; `.env.example` with all required secrets.
+
+# Implementation specifics
+- **Structure**
+  - Next.js App Router with server actions where appropriate.
+  - Tailwind configured; sensible minimal UI (clean, accessible, mobile-first).
+  - `next-intl` with `en` and `ar` messages; RTL properly handled for `ar`.
+  - Payment provider **adapter interface** with a concretely implemented **Coinbase Commerce** adapter:
+    - Create checkout session with amount in USDC (default), allow BTC/ETH if supported.
+    - Map statuses to internal PaymentStatus enum.
+    - Verify HMAC signature on webhook; update Payment & Ticket accordingly.
+  - Prisma schema with relations (User↔Wallet, Ticket↔Payment, Draw↔Ticket, Payout↔Ticket, AuditLog).
+  - Draw service generates commit hash for server seed; on run, fetch public chain anchor (expose a function with pluggable “anchor” provider—MVP can call a stub that reads a stored anchor value set by admin to avoid external calls). Derive winner deterministically and store proof.
+  - Admin auth: simple server-side check against `ADMIN_PASS` using middleware/session cookie.
+- **Consistency & freshness**
+  - Use **Node 20**, **pnpm**, **TypeScript strict**, latest Next.js 14 APIs.
+  - Prisma latest stable, `prisma format`, `prisma migrate dev` workflow.
+  - No deprecated Next.js features, no pages router.
+- **DX & docs**
+  - Include `README.md` with setup, env vars, docker usage, how to test webhooks locally, how the provable fairness works, and how to add a new payment adapter.
+  - Include `docs/architecture.md` describing modules, data flow, and adapter seams.
+
+# Deliverable style & pacing (IMPORTANT)
+- **Split your output into BIG parts** to minimize the total number of parts.
+- **Part 1 must be ONLY the full file tree** (from the repository root), including all files you plan to provide in later parts. Keep it exhaustive but clean and realistic.
+- After **each** part, print the single word **continue** on its own line and nothing else to prompt me to continue.
+- You (Claude) decide the part boundaries and content. Make parts as large as possible while staying coherent and copy-pastable.
+- In code blocks, put the filename as a leading comment line (e.g., `// file: apps/web/app/page.tsx`) so it’s clear where each snippet belongs.
+- Don’t ask me questions; make reasonable defaults and proceed.
+
+# Exact parts to produce (you decide sizing, but keep this order logic)
+1) **Repository file tree** (complete)
+2) **Environment & Docker**: `docker-compose.yml`, `.env.example`, Next config, Tailwind config, ESLint/Prettier, pnpm scripts
+3) **Prisma**: schema, migrations, seed script, generated types usage
+4) **Core app**: Next.js app router scaffolding, i18n setup (next-intl), layout, language switcher, RTL handling, minimal UI components
+5) **Domain & services**: Zod schemas, Payment provider interface + Coinbase Commerce adapter (full), NOWPayments stub adapter, server actions/route handlers, webhook verification
+6) **Lottery logic**: Ticket purchase flow, Draw service (commit–reveal + anchor), admin page, audit logs, payout record flow
+7) **Security & quality**: rate limiting, middleware, minimal tests (unit/integration), GitHub Actions CI
+8) **Docs**: README with run instructions, docs/architecture.md (explain fairness, payments, adapters, future expansion)
+
+# Environment variables (at minimum)
+- `DATABASE_URL` (Postgres)
+- `ADMIN_PASS`
+- `COINBASE_COMMERCE_API_KEY`
+- `COINBASE_COMMERCE_WEBHOOK_SECRET`
+- `APP_URL`
+- `NEXT_PUBLIC_DEFAULT_LOCALE`, `NEXT_PUBLIC_SUPPORTED_LOCALES` (e.g., `en,ar`)
+
+# Acceptance criteria
+- Runs locally with `docker compose up` (Postgres ready) + `pnpm dev`.
+- Can create a crypto checkout, receive webhook, issue a ticket, run a draw, and record payout hash—all with persistent DB state.
+- Bilingual UI (EN/AR) with correct RTL for Arabic and a working language switcher.
+- Code is modern, consistent, typed, linted, and documented.
+
+BEGIN NOW with **Part 1: the full repository file tree only**. After Part 1, print exactly: 
+continue?

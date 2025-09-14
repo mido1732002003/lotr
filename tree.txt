@@ -1,0 +1,116 @@
+lotr/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── .vscode/
+│   └── settings.json
+├── docker/
+│   └── postgres/
+│       └── init.sql
+├── prisma/
+│   ├── migrations/
+│   ├── schema.prisma
+│   └── seed.ts
+├── public/
+│   ├── favicon.ico
+│   └── robots.txt
+├── src/
+│   ├── app/
+│   │   ├── [locale]/
+│   │   │   ├── admin/
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── layout.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── not-found.tsx
+│   │   ├── api/
+│   │   │   ├── payments/
+│   │   │   │   ├── create-checkout/
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── webhook/
+│   │   │   │       └── route.ts
+│   │   │   ├── draws/
+│   │   │   │   └── run/
+│   │   │   │       └── route.ts
+│   │   │   └── payouts/
+│   │   │       └── record/
+│   │   │           └── route.ts
+│   │   ├── layout.tsx
+│   │   └── globals.css
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   └── select.tsx
+│   │   ├── layout/
+│   │   │   ├── header.tsx
+│   │   │   ├── footer.tsx
+│   │   │   └── language-switcher.tsx
+│   │   ├── lottery/
+│   │   │   ├── ticket-purchase.tsx
+│   │   │   ├── draw-info.tsx
+│   │   │   └── recent-winners.tsx
+│   │   └── admin/
+│   │       ├── tickets-table.tsx
+│   │       ├── draw-trigger.tsx
+│   │       ├── payout-recorder.tsx
+│   │       └── audit-trail.tsx
+│   ├── lib/
+│   │   ├── db/
+│   │   │   ├── prisma.ts
+│   │   │   └── queries.ts
+│   │   ├── payment/
+│   │   │   ├── types.ts
+│   │   │   ├── adapter.interface.ts
+│   │   │   ├── adapters/
+│   │   │   │   ├── coinbase-commerce.adapter.ts
+│   │   │   │   └── nowpayments.adapter.ts
+│   │   │   └── payment.service.ts
+│   │   ├── lottery/
+│   │   │   ├── draw.service.ts
+│   │   │   ├── ticket.service.ts
+│   │   │   ├── fairness.ts
+│   │   │   └── anchor-provider.ts
+│   │   ├── auth/
+│   │   │   └── admin.ts
+│   │   ├── email/
+│   │   │   ├── templates.ts
+│   │   │   └── sender.ts
+│   │   ├── utils/
+│   │   │   ├── crypto.ts
+│   │   │   ├── formatting.ts
+│   │   │   └── rate-limit.ts
+│   │   └── validation/
+│   │       ├── payment.schema.ts
+│   │       ├── draw.schema.ts
+│   │       └── common.schema.ts
+│   ├── middleware.ts
+│   ├── i18n.ts
+│   └── messages/
+│       ├── en.json
+│       └── ar.json
+├── tests/
+│   ├── unit/
+│   │   ├── fairness.test.ts
+│   │   └── payment.test.ts
+│   └── integration/
+│       └── api.test.ts
+├── docs/
+│   └── architecture.md
+├── .dockerignore
+├── .env.example
+├── .eslintrc.json
+├── .gitignore
+├── .prettierrc
+├── docker-compose.yml
+├── Dockerfile
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── pnpm-lock.yaml
+├── postcss.config.js
+├── README.md
+├── tailwind.config.ts
+└── tsconfig.json

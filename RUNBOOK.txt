@@ -1,0 +1,61 @@
+Prerequisites
+Node.js v20+ (check with node -v)
+pnpm 8+ (install with npm install -g pnpm)
+Docker & Docker Compose (check with docker --version and docker compose version)
+Git (check with git --version)
+Optional: ngrok or Cloudflared for webhook testing
+Installation & Setup
+1. Install Dependencies
+Bash
+
+pnpm install
+2. Database Setup (Docker)
+Bash
+
+# Start PostgreSQL container
+docker compose up -d postgres
+
+# Wait for it to be healthy
+docker compose ps
+# Should show postgres as "healthy"
+3. Prisma Setup
+Bash
+
+# Generate Prisma Client
+pnpm prisma generate
+
+# Run migrations to create database schema
+pnpm prisma migrate dev --name init
+
+# Seed database with sample data
+pnpm prisma db seed
+4. Environment Configuration
+Bash
+
+# Copy example environment file
+cp .env.example .env
+Edit .env with required values:
+
+Required Keys:
+
+DATABASE_URL: PostgreSQL connection string (default: postgresql://lotr:lotr_secret_password@localhost:5432/lotr)
+APP_URL: Application URL (default: http://localhost:3000)
+ADMIN_PASS: Admin password for /admin access (set a strong password)
+SESSION_SECRET: 32-character random string for sessions (generate with openssl rand -hex 16)
+Payment Keys (for Coinbase Commerce):
+
+COINBASE_COMMERCE_API_KEY: Get from Coinbase Commerce dashboard
+COINBASE_COMMERCE_WEBHOOK_SECRET: Get from webhook settings
+Internationalization:
+
+NEXT_PUBLIC_DEFAULT_LOCALE: Default language (set to en)
+NEXT_PUBLIC_SUPPORTED_LOCALES: Comma-separated list (set to en,ar)
+Optional Keys:
+
+NOWPAYMENTS_API_KEY: For NOWPayments integration (leave empty for now)
+SMTP_*: Email configuration (optional, uses console logging by default)
+5. Start Development Server
+Bash
+
+pnpm dev
+Open http://localhost:3000 in your browser.
