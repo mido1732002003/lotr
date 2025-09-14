@@ -7,7 +7,8 @@ export default async function DrawsPage() {
   const locale = await getLocale();
   const isArabic = locale === 'ar';
   
-  let draws = [];
+  let draws: any[] = [];
+
   try {
     draws = await prisma.draw.findMany({
       orderBy: { scheduledAt: 'desc' },
