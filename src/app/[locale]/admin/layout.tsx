@@ -12,7 +12,7 @@ interface AdminLayoutProps {
   params: { locale: string };
 }
 
-export default function AdminLayout({ children, params }: AdminLayoutProps) {
+export default function AdminLayout({ children }: AdminLayoutProps) {
   const t = useTranslations('admin');
   const locale = useLocale();
   const [password, setPassword] = useState('');
