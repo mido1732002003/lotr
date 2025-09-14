@@ -1,5 +1,6 @@
 import { PrismaClient, DrawStatus, WalletNetwork } from '@prisma/client';
 import crypto from 'crypto';
+
 const prisma = new PrismaClient();
 
 function generateServerSeed(): { seed: string; hash: string } {
@@ -17,7 +18,6 @@ function generateTicketNumber(): string {
 async function main() {
   console.log('🌱 Starting database seed...');
 
-  // Clean existing data
   await prisma.auditLog.deleteMany();
   await prisma.payout.deleteMany();
   await prisma.payment.deleteMany();
@@ -27,37 +27,16 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.systemSetting.deleteMany();
 
-  // Create system settings
   await prisma.systemSetting.createMany({
     data: [
-      {
-        key: 'maintenance_mode',
-        value: false,
-      },
-      {
-        key: 'min_ticket_price',
-        value: { amount: 1, currency: 'USDC' },
-      },
-      {
-        key: 'max_tickets_per_user',
-        value: 100,
-      },
-      {
-        key: 'platform_fee_percentage',
-        value: 5,
-      },
-      {
-        key: 'min_confirmations',
-        value: {
-          BTC: 3,
-          ETH: 12,
-          USDC: 12,
-        },
-      },
+      { key: 'maintenance_mode', value: false },
+      { key: 'min_ticket_price', value: { amount: 1, currency: 'USDC' } },
+      { key: 'max_tickets_per_user', value: 100 },
+      { key: 'platform_fee_percentage', value: 5 },
+      { key: 'min_confirmations', value: { BTC: 3, ETH: 12, USDC: 12 } },
     ],
   });
 
-  // Create demo users with wallets
   const demoUser1 = await prisma.user.create({
     data: {
       email: 'demo1@example.com',
@@ -95,7 +74,6 @@ async function main() {
     include: { wallets: true },
   });
 
-  // Create anonymous user (no email)
   const anonUser = await prisma.user.create({
     data: {
       wallets: {
@@ -109,7 +87,6 @@ async function main() {
     include: { wallets: true },
   });
 
-  // Create draws
   const upcomingDraw = await prisma.draw.create({
     data: {
       title: 'Weekly Mega Draw #1',
@@ -118,7 +95,7 @@ async function main() {
       currency: 'USDC',
       maxTickets: 1000,
       status: DrawStatus.UPCOMING,
-      scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       serverSeedHash: generateServerSeed().hash,
     },
   });
@@ -131,7 +108,7 @@ async function main() {
       currency: 'USDC',
       maxTickets: 100,
       status: DrawStatus.ACTIVE,
-      scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+      scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       serverSeedHash: generateServerSeed().hash,
     },
   });
@@ -145,9 +122,9 @@ async function main() {
       currency: 'USDC',
       maxTickets: 500,
       status: DrawStatus.COMPLETED,
-      scheduledAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+      scheduledAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       startedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000 + 60000), // 1 minute later
+      completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000 + 60000),
       serverSeed: seed,
       serverSeedHash: hash,
       blockchainAnchor: '0000000000000000000635e8ac1e8d1e7e0e01e5b7d1e8e7a3d8f7c8e9d1e2',
@@ -161,7 +138,6 @@ async function main() {
     },
   });
 
-  // Create sample tickets for active draw
   const ticket1 = await prisma.ticket.create({
     data: {
       ticketNumber: generateTicketNumber(),
@@ -212,7 +188,6 @@ async function main() {
     },
   });
 
-  // Create a winning ticket for completed draw
   const winningTicket = await prisma.ticket.create({
     data: {
       ticketNumber: 'TKT-DEMO-WINNER',
@@ -252,61 +227,18 @@ async function main() {
     },
   });
 
-  // Create audit logs
   await prisma.auditLog.createMany({
     data: [
-      {
-        action: 'DRAW_CREATED',
-        entityType: 'Draw',
-        entityId: upcomingDraw.id,
-        metadata: { title: upcomingDraw.title },
-      },
-      {
-        action: 'DRAW_CREATED',
-        entityType: 'Draw',
-        entityId: activeDraw.id,
-        metadata: { title: activeDraw.title },
-      },
-      {
-        action: 'TICKET_CREATED',
-        entityType: 'Ticket',
-        entityId: ticket1.id,
-        userId: demoUser1.id,
-        metadata: { ticketNumber: ticket1.ticketNumber },
-      },
-      {
-        action: 'PAYMENT_RECEIVED',
-        entityType: 'Ticket',
-        entityId: ticket1.id,
-        userId: demoUser1.id,
-        metadata: { amount: 1, currency: 'USDC' },
-      },
-      {
-        action: 'DRAW_COMPLETED',
-        entityType: 'Draw',
-        entityId: completedDraw.id,
-        metadata: { winnerTicket: 'TKT-DEMO-WINNER' },
-      },
-      {
-        action: 'PAYOUT_COMPLETED',
-        entityType: 'Ticket',
-        entityId: winningTicket.id,
-        userId: demoUser1.id,
-        metadata: { amount: 2375, currency: 'USDC' },
-      },
+      { action: 'DRAW_CREATED', entityType: 'Draw', entityId: upcomingDraw.id, metadata: { title: upcomingDraw.title } },
+      { action: 'DRAW_CREATED', entityType: 'Draw', entityId: activeDraw.id, metadata: { title: activeDraw.title } },
+      { action: 'TICKET_CREATED', entityType: 'Ticket', entityId: ticket1.id, userId: demoUser1.id, metadata: { ticketNumber: ticket1.ticketNumber } },
+      { action: 'PAYMENT_RECEIVED', entityType: 'Ticket', entityId: ticket1.id, userId: demoUser1.id, metadata: { amount: 1, currency: 'USDC' } },
+      { action: 'DRAW_COMPLETED', entityType: 'Draw', entityId: completedDraw.id, metadata: { winnerTicket: 'TKT-DEMO-WINNER' } },
+      { action: 'PAYOUT_COMPLETED', entityType: 'Ticket', entityId: winningTicket.id, userId: demoUser1.id, metadata: { amount: 2375, currency: 'USDC' } },
     ],
   });
 
   console.log('✅ Database seeded successfully!');
-  console.log('📊 Created:');
-  console.log('   - 3 users (2 with email, 1 anonymous)');
-  console.log('   - 4 wallets');
-  console.log('   - 3 draws (upcoming, active, completed)');
-  console.log('   - 3 tickets (2 active, 1 winner)');
-  console.log('   - 3 payments');
-  console.log('   - 1 payout');
-  console.log('   - 6 audit logs');
-  console.log('   - 5 system settings');
 }
 
 main()
