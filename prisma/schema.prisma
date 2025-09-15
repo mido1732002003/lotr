@@ -1,12 +1,11 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")  // Pooled connection for queries
-  directUrl = env("DIRECT_URL")    // Direct connection for migrations
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum PaymentStatus {
@@ -75,6 +74,7 @@ model User {
   id            String    @id @default(cuid())
   email         String?   @unique
   emailVerified Boolean   @default(false)
+  passwordHash  String?   // For customer accounts (email/password)
   wallets       Wallet[]
   tickets       Ticket[]
   createdAt     DateTime  @default(now())

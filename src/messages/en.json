@@ -4,78 +4,32 @@
     "draws": "Draws",
     "results": "Results",
     "howItWorks": "How It Works",
-    "connectWallet": "Connect Wallet"
-  },
-  "admin": {
-    "title": "Admin Dashboard",
-    "login": {
-      "title": "Admin Login",
-      "passwordPlaceholder": "Enter admin password",
-      "loginButton": "Login",
-      "loggingIn": "Logging in...",
-      "invalidPassword": "Invalid password. Please try again.",
-      "loginFailed": "Login failed. Please try again.",
-      "hint": "Use the password from your .env file (ADMIN_PASS)"
-    },
+    "connectWallet": "Connect Wallet",
+    "walletConnected": "Wallet connected",
+    "login": "Login",
+    "register": "Register",
     "logout": "Logout",
-    "createDraw": {
-      "button": "+ Create New Draw",
-      "cancel": "Cancel",
-      "title": "Create New Draw",
-      "form": {
-        "title": "Title",
-        "titlePlaceholder": "Weekly Mega Draw",
-        "ticketPrice": "Ticket Price (USDC)",
-        "maxTickets": "Max Tickets",
-        "scheduledAt": "Scheduled Date & Time",
-        "description": "Description (Optional)",
-        "descriptionPlaceholder": "Enter draw description",
-        "create": "Create Draw"
-      }
-    },
-    "stats": {
-      "activeDraws": "Active Draws",
-      "pendingPayouts": "Pending Payouts",
-      "totalTickets": "Total Tickets Sold",
-      "totalPrizePool": "Total Prize Pool"
-    },
-    "draws": {
-      "title": "Active Draws",
-      "noDraws": "No active draws. Create one above!",
-      "status": "Status",
-      "tickets": "Tickets",
-      "price": "Price",
-      "prizePool": "Prize Pool",
-      "scheduled": "Scheduled",
-      "startDraw": "Start Draw",
-      "runDraw": "Run Draw",
-      "completed": "Completed"
-    },
-    "payouts": {
-      "title": "Pending Payouts",
-      "noPayouts": "No pending payouts",
-      "amount": "Amount",
-      "wallet": "Wallet",
-      "draw": "Draw",
-      "txHashPlaceholder": "Transaction Hash",
-      "markAsPaid": "Mark as Paid",
-      "enterTxHash": "Please enter transaction hash"
-    },
-    "tickets": {
-      "title": "Recent Tickets"
-    },
-    "auditLogs": {
-      "title": "Recent Audit Logs"
-    },
-    "alerts": {
-      "confirmStart": "Are you sure you want to start this draw?",
-      "confirmRun": "Are you sure you want to run this draw and select a winner?",
-      "drawCreated": "Draw created successfully!",
-      "drawStarted": "Draw started successfully!",
-      "drawCompleted": "Draw completed! Winner: {winner}",
-      "payoutRecorded": "Payout recorded successfully!",
-      "failed": "Operation failed"
-    }
+    "dashboard": "Dashboard"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "createAccount": "Create Account",
+    "loading": "Please wait..."
+  },
+  "dashboard": {
+    "title": "Your Dashboard",
+    "welcome": "Welcome, {email}",
+    "tickets": "Your Tickets",
+    "noTickets": "You have not purchased any tickets yet.",
+    "ticketNumber": "Ticket Number",
+    "status": "Status",
+    "price": "Price",
+    "payments": "Recent Payments",
+    "noPayments": "No payments found."
   },
   "home": {
     "title": "Win Big with Provably Fair Lottery",
@@ -113,47 +67,6 @@
     "proceedToPayment": "Proceed to Payment",
     "ticketPurchased": "Ticket purchased successfully!",
     "ticketNumber": "Your ticket number"
-  },
-  "pages": {
-    "draws": {
-      "title": "All Draws",
-      "subtitle": "View upcoming, active, and completed lottery draws",
-      "noDraws": "No draws available at the moment"
-    },
-    "results": {
-      "title": "Draw Results",
-      "subtitle": "View past draw results and winners",
-      "noResults": "No completed draws yet"
-    },
-    "howItWorks": {
-      "title": "How It Works",
-      "subtitle": "Learn how to participate in LOTR lottery",
-      "step1": {
-        "title": "Connect Your Wallet",
-        "description": "Connect your cryptocurrency wallet or provide a wallet address to receive winnings"
-      },
-      "step2": {
-        "title": "Buy Tickets",
-        "description": "Purchase tickets for active draws using Bitcoin, Ethereum, or USDC"
-      },
-      "step3": {
-        "title": "Wait for the Draw",
-        "description": "Draws happen automatically at the scheduled time using our provably fair system"
-      },
-      "step4": {
-        "title": "Claim Your Prize",
-        "description": "Winners automatically receive their prizes to their wallet address"
-      },
-      "security": {
-        "title": "Security & Fairness",
-        "description": "All draws use blockchain technology and cryptographic proofs to ensure complete fairness and transparency. Every result can be independently verified."
-      }
-    }
-  },
-  "notFound": {
-    "title": "Page Not Found",
-    "description": "The page you are looking for doesn't exist or has been moved.",
-    "goHome": "Go Home"
   },
   "footer": {
     "about": {

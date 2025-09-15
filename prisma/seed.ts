@@ -1,5 +1,6 @@
 import { PrismaClient, DrawStatus, WalletNetwork } from '@prisma/client';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -37,6 +38,17 @@ async function main() {
     ],
   });
 
+  // Demo customer account
+  const demoPasswordHash = await bcrypt.hash('Password123!', 12);
+  const demoCustomer = await prisma.user.create({
+    data: {
+      email: 'user@lotr.test',
+      emailVerified: true,
+      passwordHash: demoPasswordHash,
+    },
+  });
+
+  // Demo users with wallets for existing tickets data
   const demoUser1 = await prisma.user.create({
     data: {
       email: 'demo1@example.com',
@@ -74,17 +86,14 @@ async function main() {
     include: { wallets: true },
   });
 
-  const anonUser = await prisma.user.create({
+  // Add a wallet for the demo customer (for tickets linkage)
+  const demoCustomerWallet = await prisma.wallet.create({
     data: {
-      wallets: {
-        create: {
-          address: '0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359',
-          network: WalletNetwork.ETHEREUM,
-          isPrimary: true,
-        },
-      },
+      userId: demoCustomer.id,
+      address: '0x9fB6916095ca1df60bB79Ce92cE3Ea74c37c5d359',
+      network: WalletNetwork.ETHEREUM,
+      isPrimary: true,
     },
-    include: { wallets: true },
   });
 
   const upcomingDraw = await prisma.draw.create({
@@ -138,6 +147,7 @@ async function main() {
     },
   });
 
+  // Tickets for active draw (demo users)
   const ticket1 = await prisma.ticket.create({
     data: {
       ticketNumber: generateTicketNumber(),
@@ -188,6 +198,33 @@ async function main() {
     },
   });
 
+  // Add a ticket for the demo customer for dashboard visibility
+  await prisma.ticket.create({
+    data: {
+      ticketNumber: generateTicketNumber(),
+      drawId: activeDraw.id,
+      userId: demoCustomer.id,
+      walletId: demoCustomerWallet.id,
+      status: 'ACTIVE',
+      purchasedAt: new Date(),
+      payment: {
+        create: {
+          provider: 'COINBASE_COMMERCE',
+          providerPaymentId: `charge_${crypto.randomBytes(16).toString('hex')}`,
+          amount: 1,
+          currency: 'USDC',
+          cryptoAmount: 1,
+          cryptoCurrency: 'USDC',
+          status: 'CONFIRMED',
+          confirmedAt: new Date(),
+          transactionHash: '0x' + crypto.randomBytes(32).toString('hex'),
+          blockConfirmations: 12,
+        },
+      },
+    },
+  });
+
+  // Winning ticket for completed draw
   const winningTicket = await prisma.ticket.create({
     data: {
       ticketNumber: 'TKT-DEMO-WINNER',
@@ -214,7 +251,7 @@ async function main() {
       payout: {
         create: {
           walletId: demoUser1.wallets[0].id,
-          amount: 2375, // 2500 - 5% platform fee
+          amount: 2375,
           currency: 'USDC',
           cryptoAmount: 2375,
           cryptoCurrency: 'USDC',
