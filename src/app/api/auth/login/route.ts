@@ -18,7 +18,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid input', details: parsed.error.flatten() },
+        { status: 400 }
+      );
     }
 
     const { email, password } = parsed.data;
@@ -36,14 +39,23 @@ export async function POST(req: NextRequest) {
     }
 
     const res = new Response();
-    const session = await getIronSession<LotrSession>(req as any, res as any, sessionOptions);
-    session.user = { id: user.id, email: user.email };
+    const session = await getIronSession<LotrSession>(
+      req as any,
+      res as any,
+      sessionOptions
+    );
+    session.user = { id: user.id, email: user.email ?? '' };
+
     await session.save();
 
-    const response = NextResponse.json({ success: true, user: { id: user.id, email: user.email } });
+    const response = NextResponse.json({
+      success: true,
+      user: { id: user.id, email: user.email ?? '' }, // هنا fallback برضه
+    });
     attachSessionHeaders(res, response);
     return response;
-  } catch {
+  } catch (err) {
+    console.error('Login error:', err);
     return NextResponse.json({ error: 'Login failed' }, { status: 500 });
   }
 }
