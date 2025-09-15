@@ -1,10 +1,12 @@
 {
-  "buildCommand": "prisma generate && prisma migrate deploy && next build",
-  "devCommand": "next dev",
-  "installCommand": "pnpm install",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm prisma generate && pnpm prisma migrate deploy && pnpm build",
   "framework": "nextjs",
   "outputDirectory": ".next",
-  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_DEFAULT_LOCALE": "en",
+    "NEXT_PUBLIC_SUPPORTED_LOCALES": "en,ar"
+  },
   "functions": {
     "src/app/api/payments/webhook/route.ts": {
       "maxDuration": 30
@@ -12,15 +14,5 @@
     "src/app/api/draws/run/route.ts": {
       "maxDuration": 30
     }
-  },
-  "env": {
-    "NEXT_PUBLIC_DEFAULT_LOCALE": "en",
-    "NEXT_PUBLIC_SUPPORTED_LOCALES": "en,ar"
-  },
-  "crons": [
-    {
-      "path": "/api/cron/check-draws",
-      "schedule": "0 0 * * *"
-    }
-  ]
+  }
 }
