@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import bcrypt from 'bcryptjs';
 import { registerSchema } from '@/lib/validation/auth.schema';
-import { getIronSession } from 'iron-session/edge';
+import { getIronSession } from 'iron-session';
 import { sessionOptions, type LotrSession } from '@/lib/auth/session';
 import { withRateLimit, rateLimiters } from '@/lib/utils/rate-limit';
 
@@ -11,7 +11,6 @@ function attachSessionHeaders(from: Response, to: NextResponse) {
 }
 
 export async function POST(req: NextRequest) {
-  // Rate limit
   const limited = await withRateLimit(req, rateLimiters.auth);
   if (limited instanceof Response) return limited as NextResponse;
 
@@ -34,9 +33,8 @@ export async function POST(req: NextRequest) {
       select: { id: true, email: true },
     });
 
-    // Create session
     const res = new Response();
-    const session = await getIronSession<LotrSession>(req, res, sessionOptions);
+    const session = await getIronSession<LotrSession>(req as any, res as any, sessionOptions);
     session.user = { id: user.id, email: user.email };
     await session.save();
 

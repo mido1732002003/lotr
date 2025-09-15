@@ -1,4 +1,4 @@
-import { getIronSession } from 'iron-session/edge';
+import { getIronSession } from 'iron-session';
 import type { IronSessionOptions } from 'iron-session';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -15,7 +15,6 @@ export type LotrSession = {
 const SESSION_PASSWORD = process.env.SESSION_SECRET;
 
 if (!SESSION_PASSWORD || SESSION_PASSWORD.length < 32) {
-  // Do not throw at import time in production deploy; but log a clear message
   console.warn(
     'SESSION_SECRET is missing or too short. Set SESSION_SECRET with at least 32 characters.'
   );
@@ -34,23 +33,20 @@ export const sessionOptions: IronSessionOptions = {
 
 // For API routes (App Router: Route Handlers)
 export async function getSession(req: Request, res: Response) {
-  return getIronSession<LotrSession>(req, res, sessionOptions);
+  return getIronSession<LotrSession>(req as any, res as any, sessionOptions);
 }
 
 // For Server Components/pages: read session (no mutation)
-// Create a synthetic Request from incoming headers to read the cookie
 export async function getUserFromSession(): Promise<SessionUser | null> {
   const h = headers();
   const hObj = new Headers();
-  // Copy incoming headers to the synthetic request
   h.forEach((value, key) => hObj.set(key, value));
   const req = new Request('https://lotr.local/session-read', { headers: hObj });
   const res = new Response();
-  const session = await getIronSession<LotrSession>(req, res, sessionOptions);
+  const session = await getIronSession<LotrSession>(req as any, res as any, sessionOptions);
   return session.user ?? null;
 }
 
-// Require user in a Server Component/page; redirect to login when unauthenticated
 export async function requireUser(locale: string): Promise<SessionUser> {
   const user = await getUserFromSession();
   if (!user) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getIronSession } from 'iron-session/edge';
+import { getIronSession } from 'iron-session';
 import { sessionOptions, type LotrSession } from '@/lib/auth/session';
 
 function attachSessionHeaders(from: Response, to: NextResponse) {
@@ -8,7 +8,7 @@ function attachSessionHeaders(from: Response, to: NextResponse) {
 
 export async function POST(req: NextRequest) {
   const res = new Response();
-  const session = await getIronSession<LotrSession>(req, res, sessionOptions);
+  const session = await getIronSession<LotrSession>(req as any, res as any, sessionOptions);
   session.destroy();
 
   const response = NextResponse.json({ success: true });
