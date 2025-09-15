@@ -35,7 +35,9 @@ export async function POST(req: NextRequest) {
 
     const res = new Response();
     const session = await getIronSession<LotrSession>(req as any, res as any, sessionOptions);
-    session.user = { id: user.id, email: user.email };
+    session.user = { id: user.id, email: user.email ?? '' };
+
+
     await session.save();
 
     const response = NextResponse.json({ success: true, user });
