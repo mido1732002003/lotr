@@ -40,7 +40,7 @@
     "coinbase-commerce-node": "^1.0.4",
     "cookie": "^0.6.0",
     "date-fns": "^3.6.0",
-    "iron-session": "^8.0.6",
+    "iron-session": "^8.0.4",
     "next": "14.0.4",
     "next-intl": "^3.26.5",
     "react": "18.3.1",
